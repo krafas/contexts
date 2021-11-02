@@ -403,7 +403,24 @@ class JsonContext extends BaseContext
         }, 'JSON Schema matches but it should not');
     }
 
+    /**
+     * @Then the JSON node :node should be a datetime
+     */
+    public function theJsonNodeShouldBeADateTime(string $node): void
+    {
+        $json = $this->getJson();
 
+        $format = 'Y-m-d H:i:s';
+        $actual = $this->inspector->evaluate($json, $node);
+        $d = \DateTime::createFromFormat($format, $actual);
+
+        $valid = $d && $d->format($format) === $actual;
+        if (!$valid) {
+            throw new \Exception(
+                sprintf("The node value is '%s'", json_encode($actual))
+            );
+        }
+    }
 
     protected function getJson()
     {
